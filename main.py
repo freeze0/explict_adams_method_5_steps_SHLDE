@@ -83,7 +83,7 @@ def adams5(f, tspan, y0, h):
 #                          'delta2_h': abs(y_adams_h[i][1] - y_h[1][i]), 'delta3_h': abs(y_adams_h[i][2] - y_h[2][i])})
 
 
-# Задаем функцию, задающую правую часть системы ZADACHA2
+# Задаем функцию, задающую правую часть системы ZADACHA3
 
 # def f(t, y):
 #     dx_dt = np.zeros(y.shape)
@@ -125,3 +125,47 @@ def adams5(f, tspan, y0, h):
 #         writer.writerow({'x_h': x_h[i], 'y1_adams_h': y_adams_h[i][0], 'y2_adams_h': y_adams_h[i][1],
 #                          'y1_toch_h': y_h[0][i], 'y2_toch_h': y_h[1][i], 'delta1_h': abs(y_adams_h[i][0] - y_h[0][i]),
 #                          'delta2_h': abs(y_adams_h[i][1] - y_h[1][i])})
+
+
+# Задаем функцию, задающую правую часть системы ZADACHA2
+
+def f(t, y):
+    dx_dt = np.zeros(y.shape)
+    dx_dt[0] = 2*y[1]-y[0]
+    dx_dt[1] = 4*y[1]-3y[0]+np.exp(3*t)/(np.exp(2*t)+1)
+    return dx_dt
+
+def exact(t):
+    y1 = np.exp(t)+2*np.exp(2*t)-np.exp(t)*np.log(np.exp(2*t)+1)+2*np.exp(2*t)*np.arctan(np.exp(t))
+    y2 = np.exp(t)+3*np.exp(2*t)-np.exp(t)*np.log(np.exp(2*t)+1)+3*np.exp(2*t)*np.arctan(np.exp(t))
+    return [y1, y2]
+
+
+# Начальные значения и временной интервал для решения
+y0 = np.array([3.87, 5.66])
+tspan = [0, 4]
+
+# Решение системы с помощью пятишагового метода Адамса с шагом 0.1
+x_h, y_adams_h = adams5(f, tspan, y0, 0.2)
+y_h = exact(x_h)
+y_h = np.reshape(y_h, (2, len(y_adams_h)))
+
+# Решение системы с помощью пятишагового метода Адамса с шагом 0.05
+x_h2, y_adams_h2 = adams5(f, tspan, y0, 0.1)
+y_h2 = exact(x_h2)
+y_h2 = np.reshape(y_h2, (2, len(y_adams_h2)))
+
+with open('answer.csv', 'w', newline='') as csvfile:
+    fieldnames = ['x_h', 'y1_adams_h', 'y2_adams_h', 'y1_toch_h', 'y2_toch_h', 'delta1_h', 'delta2_h', 'x_h2',
+                  'y1_adams_h2', 'y2_adams_h2', 'y1_toch_h2', 'y2_toch_h2', 'delta1_h2', 'delta2_h2']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    for i in range(len(x_h2)):
+        writer.writerow({'x_h2': x_h2[i], 'y1_adams_h2': y_adams_h2[i][0], 'y2_adams_h2': y_adams_h2[i][1],
+                         'y1_toch_h2': y_h2[0][i], 'y2_toch_h2': y_h2[1][i],
+                         'delta1_h2': abs(y_adams_h2[i][0] - y_h2[0][i]),
+                         'delta2_h2': abs(y_adams_h2[i][1] - y_h2[1][i])})
+    for i in range(len(x_h)):
+        writer.writerow({'x_h': x_h[i], 'y1_adams_h': y_adams_h[i][0], 'y2_adams_h': y_adams_h[i][1],
+                         'y1_toch_h': y_h[0][i], 'y2_toch_h': y_h[1][i], 'delta1_h': abs(y_adams_h[i][0] - y_h[0][i]),
+                         'delta2_h': abs(y_adams_h[i][1] - y_h[1][i])})
