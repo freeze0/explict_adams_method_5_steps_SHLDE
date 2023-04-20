@@ -97,15 +97,15 @@ def exact(t):
 
 # Начальные значения и временной интервал для решения
 y0 = np.array([0, 0])
-tspan = [0, 4]
+tspan = [0, 3.5]
 
 # Решение системы с помощью пятишагового метода Адамса с шагом 0.1
-x_h, y_adams_h = adams5(f, tspan, y0, 0.2)
+x_h, y_adams_h = adams5(f, tspan, y0, 0.1)
 y_h = exact(x_h)
 y_h = np.reshape(y_h, (2, len(y_adams_h)))
 
 # Решение системы с помощью пятишагового метода Адамса с шагом 0.05
-x_h2, y_adams_h2 = adams5(f, tspan, y0, 0.1)
+x_h2, y_adams_h2 = adams5(f, tspan, y0, 0.05)
 y_h2 = exact(x_h2)
 y_h2 = np.reshape(y_h2, (2, len(y_adams_h2)))
 
